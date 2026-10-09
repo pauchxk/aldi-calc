@@ -51,7 +51,7 @@ def choose_mode():
 def main():
     brand_filter = choose_mode()
 
-    items = load_list("~/Documents/Obsidian-Notes/Personal/Food/Shopping Lists/Aldi-Calc List Input.md")
+    items = load_list("~/Documents/Obsidian-Notes/Home/Food/Shopping Lists/Aldi-Calc List Input.md")
     lines = []
     total = 0.0
 
@@ -72,7 +72,7 @@ def main():
 
     output = "\n".join(lines)
     print(output)
-    Path("/home/pauchxk/Documents/Obsidian-Notes/Personal/Food/Shopping Lists/Aldi-Calc List Output.md").write_text(output)
+    Path("/home/pauchxk/Documents/Obsidian-Notes/Home/Food/Shopping Lists/Aldi-Calc List Output.md").write_text(output)
 
 
 if __name__ == "__main__":
