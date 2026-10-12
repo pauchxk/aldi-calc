@@ -63,7 +63,7 @@ def main():
             name = match.get("name", item)
             price_display = match["price"]["amountRelevantDisplay"]  # e.g. '£0.95'
             price = match["price"]["amount"] / 100  # amount is in pence
-            lines.append(f"- {name} — {price_display}  _(searched: '{item}')_")
+            lines.append(f"- [ ] {name} — {price_display}  _(searched: '{item}')_")
             total += price
         else:
             lines.append(f"- {item} — not found")
