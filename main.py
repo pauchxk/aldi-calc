@@ -6,8 +6,18 @@ from urllib.request import Request, urlopen
 ALDI_SEARCH_URL = "https://asl.api.aldi.co.uk/commerce/v3/product-search"
 BRAND_FILTER = "EVERYDAY ESSENTIALS"
 
+CANDIDATE_DIRS = [
+    Path("/srv/dev-disk-by-uuid-75650afa-3835-424b-bdad-d4ab6d83c6d1/library/pauchxk/Documents/Obsidian-Notes/Home/Food/Shopping Lists"),
+    Path("/home/pauchxk/library/Documents/Obsidian-Notes/Home/Food/Shopping Lists")
+]
+
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 
+def find_lists_dir():
+    for dir_path in CANDIDATE_DIRS:
+        if dir_path.exists() and dir_path.is_dir():
+            return dir_path
+    raise FileNotFoundError("No valid directory found for shopping lists.")
 
 def search_aldi(query, brand_filter=None):
     params = {
@@ -38,7 +48,7 @@ def best_match(results):
 
 
 def load_list(path):
-    return [line.strip() for line in Path(path).expanduser().read_text().splitlines() if line.strip()]
+    return [line.strip() for line in Path(path).read_text().splitlines() if line.strip()]
 
 
 def choose_mode():
@@ -51,11 +61,20 @@ def choose_mode():
 def main():
     brand_filter = choose_mode()
 
-    items = load_list("~/Documents/Obsidian-Notes/Home/Food/Shopping Lists/Aldi-Calc List Input.md")
+    lists_dir = find_lists_dir()
+    input_path = lists_dir / "Aldi-Calc List Input.md"
+    output_path = lists_dir / "Aldi-Calc List Output.md"
+
+    items = load_list(input_path)
     lines = []
     total = 0.0
 
     for item in items:
+        multiple = False
+
+        if item[-2] == "x":
+            multiple = True
+
         results = search_aldi(item, brand_filter)
         match = best_match(results)
 
@@ -63,7 +82,13 @@ def main():
             name = match.get("name", item)
             price_display = match["price"]["amountRelevantDisplay"]  # e.g. '£0.95'
             price = match["price"]["amount"] / 100  # amount is in pence
-            lines.append(f"- [ ] {name} — {price_display}  _(searched: '{item}')_")
+
+            if multiple:
+                price *= int(item[-1])  # multiply by the quantity if specified
+                lines.append(f"- [ ] {name} x {item[-1]} — £{price:.2f}  _(searched: '{item}')_")
+            else:
+                lines.append(f"- [ ] {name} — £{price:.2f}  _(searched: '{item}')_")
+
             total += price
         else:
             lines.append(f"- {item} — not found")
@@ -72,7 +97,7 @@ def main():
 
     output = "\n".join(lines)
     print(output)
-    Path("/home/pauchxk/Documents/Obsidian-Notes/Home/Food/Shopping Lists/Aldi-Calc List Output.md").write_text(output)
+    Path(output_path).write_text(output)
 
 
 if __name__ == "__main__":
