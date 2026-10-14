@@ -8,8 +8,7 @@ BRAND_FILTER = "EVERYDAY ESSENTIALS"
 
 CANDIDATE_DIRS = [
     Path("/srv/dev-disk-by-uuid-75650afa-3835-424b-bdad-d4ab6d83c6d1/library/pauchxk/Documents/Obsidian-Notes/Home/Food/Shopping Lists"),
-    Path.home() / "Documents/Obsidian-Notes/Home/Food/Shopping Lists"
-]
+    Path.home() / "Documents/Obsidian-Notes/Home/Food/Shopping Lists"]
 
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
 
@@ -74,6 +73,8 @@ def main():
 
         if item[-2] == "x":
             multiple = True
+            multiplier = int(item[-1])  # get the quantity
+            item = item[:-3]  # remove the " xN" part for searching
 
         results = search_aldi(item, brand_filter)
         match = best_match(results)
@@ -84,8 +85,8 @@ def main():
             price = match["price"]["amount"] / 100  # amount is in pence
 
             if multiple:
-                price *= int(item[-1])  # multiply by the quantity if specified
-                lines.append(f"- [ ] {name} x {item[-1]} — £{price:.2f}  _(searched: '{item}')_")
+                price *= multiplier  # multiply by the quantity if specified
+                lines.append(f"- [ ] {name} x {multiplier} — £{price:.2f}  _(searched: '{item}')_")
             else:
                 lines.append(f"- [ ] {name} — £{price:.2f}  _(searched: '{item}')_")
 
