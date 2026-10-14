@@ -8,7 +8,7 @@ BRAND_FILTER = "EVERYDAY ESSENTIALS"
 
 CANDIDATE_DIRS = [
     Path("/srv/dev-disk-by-uuid-75650afa-3835-424b-bdad-d4ab6d83c6d1/library/pauchxk/Documents/Obsidian-Notes/Home/Food/Shopping Lists"),
-    Path("/home/pauchxk/library/Documents/Obsidian-Notes/Home/Food/Shopping Lists")
+    Path.home() / "Documents/Obsidian-Notes/Home/Food/Shopping Lists"
 ]
 
 HEADERS = {"User-Agent": "Mozilla/5.0", "Accept": "application/json"}
